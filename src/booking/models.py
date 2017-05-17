@@ -34,7 +34,7 @@ class Manager(models.Model):
         ordering = ['name']
 
     def __unicode__(self):
-        return u'%s' % (self.manager)
+        return u'%s' % (self.name)
 
 class Show(models.Model):
     def upload_img(instance, filename):
@@ -80,15 +80,31 @@ class Event(models.Model):
     location = models.ForeignKey(Location)
     published = models.BooleanField(default=False)
     ts = models.DateTimeField()
+    qty_available = models.IntegerField()
 
     class Meta(object):
         verbose_name_plural = 'events'
         ordering = ['-ts']
 
     def __unicode__(self):
-        return u'%s' % (self.show.title, self.ts.strftime('%d/%m/%Y'))
+        return u'%s - %s' % (self.show.title, self.ts.strftime('%d/%m/%Y'))
 
     def get_absolute_url(self):
         return reverse('eventi', args=[slugify(self.show.title), self.ts.strftime('%d/%m/%Y')])
+
+
+class Booking(models.Model):
+    user = models.ForeignKey(User)
+    event = models.ForeignKey(Event)
+    ts = models.DateTimeField()
+    quantity = models.IntegerField(default=1)
+
+    class Meta(object):
+        verbose_name_plural = 'bookings'
+        ordering = ['-ts']
+
+    def __unicode__(self):
+        return u'%s - %s' % (self.ts.strftime('%d/%m/%Y'), self.user.username)
+
 
 
